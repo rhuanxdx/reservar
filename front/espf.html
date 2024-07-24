@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/front/espf.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type = "module" src="/front/cadastrarespaco.js" defer> </script>
+</head>
+<header>
+    <h2 id="home"></h2>
+        <nav class="navigation">
+
+            </ul>
+           <ul class="nav-menu">
+                <li class="nav-item"><a href="admprincipal.html">Home</a></li>
+                <li class="nav-item"><a href="admprincipal.html">Sobre</a></li>
+                <li class="nav-item"><a href="agendaadm.html">Agenda</a></li>
+                <li class="nav-item"><a href="#contato">Contato</a></li>
+                <li class="nav-item dropdown">
+                  <div class="dropdown">
+                    <button class="dropdown-btn">Cadastrar</button>
+                    <div class="dropdown-content">
+                      <a href="espf.html">Espaço Físico</a>
+                      <a href="cadastrarrec.html">Recurso</a>
+                    </div>
+                  </div>
+                </li>
+                <li class="nav-item"><a href="autorizar.html">Solicitações</a></li>
+
+              </ul>
+
+        <div class="menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <div id="menu">
+            <div id="logo">
+                <img src="/img/logo2-removebg-preview.png" alt="Logo do Site" class="logo">
+            </div> 
+    </nav>
+    
+    <script src="cabeçalho.js"></script>
+    <script src="cadastrarespaço.js"></script>
+    
+</header> 
+
+<body>
+     
+    <script src="cadastro.js"></script>
+    
+    <div class="box">
+       
+        <div class="form-box">
+            <h2>Cadastrar Espaço Físico</h2>
+            
+            <form action="#">
+
+                <div class="input-group">
+                    <label for="nome">Nome</label>
+                    <input type="nome" id="nome" placeholder="Informe o nome da sala" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="descrição">Descrição</label>
+                    <input type="descrição" id="descrição" placeholder="Informe a descrição do espaço físico" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="numero_sala">Número da Sala</label>
+                    <input type="numero_sala" id="numero_sala" placeholder="Informe o número da Sala" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="capacidade">Capacidade</label>
+                    <input type="capacidade" id="capacidade" placeholder="Informe a capacidade do espaço físico" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="andar">Andar</label>
+                    <input type="andar" id="andar" placeholder="Informe o andar do espaço físico" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="predio">Prédio</label>
+                    <input type="predio" id="predio" placeholder="Informe o prédio do espaço físico" required>
+                </div>
+                
+                <!-- <div class="input-group">
+                    <label for="horariosDisponiveis">Horários Disponíveis</label>
+                    <input type="horariosDisponiveis" id="horarios_disponiveis" placeholder="Informe os Horários disponíveis" required>
+                </div> -->
+                
+                <div class="input-group">
+                    <label for="largura">Largura</label>
+                    <input type="largura" id="largura" placeholder="Informe a Largura do espaço físico" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="comprimento">Comprimento</label>
+                    <input type="comprimento" id="comprimento" placeholder="Informe o comprimento do espaço físico" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="area">Área</label>
+                    <input type="area" id="area" placeholder="Informe a área do espaço físico" required>
+                </div>
+                
+
+                <div class="input-group">
+                    <button>Cadastrar</button>
+                </div>
+
+            </form>
+        </div>
+        </div>
+</body>
+
+        <footer class="rodape" id="contato">
+            <div class="rodape-div">
+         
+                <div class="rodape-div-1">
+                    <div class="rodape-div-1-coluna">
+                   
+                        <span><b>RESERVAR</b></span>
+                        <p>Esse sistema faz parte do Projeto Interdisciplinar do CEFET-MG campus Leopoldina.</p>
+                    </div>
+                </div>
+         
+                <div class="rodape-div-2">
+                    <div class="rodape-div-2-coluna">
+                   
+                        <span><b>Contatos</b></span>
+                        <p>spacelab02023pi2gmail.com</p>
+                        <p>ig: @reservar.cefetmg</p>
+                    </div>
+                </div>
+         
+                <div class="rodape-div-3">
+                    <div class="rodape-div-3-coluna">
+                    
+                        <span><b>Links</b></span>
+                        <p><a href="#">Desenvolvedores</a></p>
+                        <p><a href="#">Sistema</a></p>
+                        <p><a href="#">Sobre</a></p>
+                    </div>
+                </div>
+         
+                <div class="rodape-div-4">
+                    <div class="rodape-div-4-coluna">
+                      
+                        <span><b>Outros</b></span>
+                        <p> <a href="/front/Politica.html">Política de Privacidade</p>
+                    </div>
+                </div>
+         
+            </div>
+            <p class="rodape-direitos">Copyright © 2023 – Todos os Direitos Reservados.</p>
+         </footer>
+
+
+</html>

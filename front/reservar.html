@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Antic&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cormorant&display=swap" rel="stylesheet" />
+  <link href="reservar.css" rel="stylesheet" />
+  <title>ReservaR</title>
+  <link rel="shortcut icon" href="logoRR.png" type="image/x-icon" />
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script type="module" src="/front/reservar.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <main>
+    <header>
+      <nav class="navigation">
+
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="/front/servprincipal.html">Home</a></li>
+          <li class="nav-item"><a href="sobre.html">Sobre</a></li>
+          <li class="nav-item"><a href="agenda.html">Agenda</a></li>
+          <li class="nav-item"><a href="#">Contato</a></li>
+          <li class="nav-item"><a href="disponiveis.html">Reservar</a></li>
+          <li class="nav-item"><a href="minhas_reservas.html">Minhas reservas</a></li>
+        </ul>
+
+        <div class="menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+
+        <div id="menu">
+          <div id="logo">
+            <img src="/img/logoprincipal.png" alt="Logo" class="logo">
+          </div>
+      </nav>
+
+      <script src="cabeçalho.js"></script>
+
+    </header>
+
+    <div class="tela1">
+
+
+      <div class="box2" id="box2">
+        <div class="box-content">
+          <img src="/img/imagemsaladeaula.jpg" alt="Imagem" class="box-image">
+        </div>
+      </div>
+
+
+      <div class="box3" id="box3">
+        <div class="box3-content">
+          <form action="" method="POST" id="reservaForm">
+            <div class="teste">Data início<input type="Date" id="data_inicio" required /></div>
+            <br>
+            <div class="teste">Data final<input type="Date" id="data_final" required /></div>
+            <br>
+            <div class="teste">Horário início<input type="Time" id="horario_inicio" required /></div>
+            <br>
+            <div class="teste">Horário final<input type="Time" id="horario_final" required /></div>
+            <br>
+            <div class="teste">Finalidade<input 6type=" Text" id="finalidade" style="width:60% ;" required />
+            </div>
+            <br />
+            <button class="confirmar">Confirmar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function criarNovoBox(idespaço_fisico, nome, descrição, numero_sala, capacidade, andar, predio, largura, comprimento, area) {
+        // Criar os elementos HTML
+        var novoBox = document.createElement('div');
+        novoBox.className = 'box1';
+        novoBox.id = idespaço_fisico;
+
+
+        var h1 = document.createElement('h1');
+
+        // Verificar se o número da sala é nulo
+        if (numero_sala == null) {
+          h1.textContent = nome;
+        }
+        else {
+          h1.textContent = nome + "-" + numero_sala;
+        }
+
+        var h3Descrição = document.createElement('h3');
+        h3Descrição.textContent = 'Descrição - ' + descrição;
+
+
+        var h3Capacidade = document.createElement('h3');
+        h3Capacidade.textContent = 'Capacidade - ' + capacidade + ' pessoas';
+
+        var h3Predio = document.createElement('h3');
+        h3Predio.textContent = 'Prédio - ' + predio;
+
+        var h3Andar = document.createElement('h3');
+        h3Andar.textContent = 'Andar - ' + andar;
+
+        var h3Largura = document.createElement('h3');
+        h3Largura.textContent = 'Largura - ' + largura;
+
+        var h3Comprimento = document.createElement('h3');
+        h3Comprimento.textContent = 'Comprimento - ' + comprimento;
+
+        var h3Area = document.createElement('h3');
+        h3Area.textContent = 'Area - ' + area;
+
+        var button = document.createElement('button');
+        button.textContent = 'Reservar';
+        button.className = 'reservar-button';
+        button.addEventListener("click", abrirDiv);
+
+        // Montar a estrutura do novo box
+        novoBox.appendChild(h1);
+        novoBox.appendChild(h3Descrição);
+        novoBox.appendChild(h3Capacidade);
+        novoBox.appendChild(h3Predio);
+        novoBox.appendChild(h3Andar);
+        novoBox.appendChild(h3Largura);
+        novoBox.appendChild(h3Comprimento);
+        novoBox.appendChild(h3Area);
+        novoBox.appendChild(button);
+
+
+        // Adicionar o novo box ao elemento com a classe "t1"
+        var container = document.querySelector('.tela1');
+        container.appendChild(novoBox);
+      }
+
+      // Função para obter o valor do parâmetro 'id' da URL
+      function obterIdDoParametro() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+      }
+
+
+
+      // Função para buscar dados do banco de dados e criar a div
+      async function carregarDadosEBox() {
+        try {
+
+          // Chame a função para obter o ID do parâmetro
+          const id = obterIdDoParametro();
+          const response = await axios.get(`https://reservar.glitch.me/verespacos/${id}`);
+
+          const dados = response.data; // Supondo que os dados retornados sejam um objeto com os detalhes da sala
+          if (dados) {
+            for (const dado of dados) {
+              criarNovoBox(dado.idespaço_fisico, dado.nome, dado.descrição, dado.numero_sala, dado.capacidade, dado.andar, dado.predio, dado.largura, dado.comprimento, dado.area);
+            }
+          } else {
+            console.error('Dados vazios ou não encontrados.');
+          }
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+        }
+      }
+
+      // Chamar a função para carregar dados e criar a div quando a página estiver pronta
+      document.addEventListener('DOMContentLoaded', carregarDadosEBox);
+      var idusuario = sessionStorage.getItem("idusuario");
+
+      if (!idusuario) {
+        // Se o ID do usuário não estiver presente, redirecionar para a página de login
+        window.location.href = "/index.html"; // Substitua "login.html" com a sua página de login
+      } else {
+
+        function abrirDiv() {
+          var div = document.getElementById("box3");
+          if (div.style.display === "none") {
+            div.style.display = "flex";
+            var div = document.getElementById("box2");
+            div.style.display = "none";
+          } else {
+            var div = document.getElementById("box3");
+            div.style.display = "none";
+            var div = document.getElementById("box2");
+            div.style.display = "flex";
+          }
+        }
+      }
+    </script>
+
+  </main>
+  <footer class="rodape" id="contato">
+    <div class="rodape-div">
+
+      <div class="rodape-div-1">
+        <div class="rodape-div-1-coluna">
+
+          <span><b>RESERVAR</b></span>
+          <p>Esse sistema faz parte do Projeto Interdisciplinar do CEFET-MG campus Leopoldina.</p>
+        </div>
+      </div>
+
+      <div class="rodape-div-2">
+        <div class="rodape-div-2-coluna">
+
+          <span><b>Contatos</b></span>
+          <p>spacelab02023pi2gmail.com</p>
+          <p>ig: @reservar.cefetmg</p>
+        </div>
+      </div>
+
+      <div class="rodape-div-3">
+        <div class="rodape-div-3-coluna">
+
+          <span><b>Links</b></span>
+          <p><a href="#">Desenvolvedores</a></p>
+          <p><a href="#">Sistema</a></p>
+          <p><a href="#">Sobre</a></p>
+        </div>
+      </div>
+
+      <div class="rodape-div-4">
+        <div class="rodape-div-4-coluna">
+
+          <span><b>Outros</b></span>
+          <p> <a href="/front/Politica.html">Política de Privacidade</p>
+        </div>
+      </div>
+
+    </div>
+    <p class="rodape-direitos">Copyright © 2023 – Todos os Direitos Reservados.</p>
+  </footer>
+</body>
+
+</html>

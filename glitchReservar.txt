@@ -1,0 +1,337 @@
+Links do glitch:
+
+live site: https://reservar.glitch.me
+code https://glitch.com/edit/#!/reservar
+
+
+##########################################################################################################
+
+Código:
+
+
+
+
+const express = require('express');
+const app = express();
+const port = 3000;
+const mysql = require('mysql2');
+const cors = require('cors');
+
+app.use(cors());
+app.use(express.json());
+
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
+const USER = process.env.USER;
+const PASSWORD = process.env.PASSWORD;
+const DATABASE = process.env.DATABASE;
+
+function execSQLQuery(sqlQry, id, res) {
+  const connection = mysql.createConnection({
+    host: HOST,
+    port: PORT,
+    user: USER,
+    password: PASSWORD,
+    database: DATABASE
+  });
+
+  connection.query(sqlQry, id, (error, results, fields) => {
+    if (error)
+      res.json(error);
+    else
+      res.json(results);
+    connection.end();
+  });
+}
+
+async function resultSQLQuery(sqlQry, id) {
+  const connection = mysql.createConnection({
+    host: HOST,
+    port: PORT,
+    user: USER,
+    password: PASSWORD,
+    database: DATABASE
+  });
+
+  var [result] = await connection.promise().query(sqlQry, id);
+  try {
+    return result;
+  } catch (err) {
+    console.log("error");
+    throw err
+  }
+}
+
+
+// Rota para obter a lista de servidores
+app.get('/verusuarios', (req, res) => {
+    execSQLQuery('SELECT nome, email,senha, idusuario FROM usuario', null, res);
+});
+
+
+app.post('/cadastrarusuario', (req, res) => {
+  const nome = req.body.nome;
+  const email = req.body.email;
+  const senha = req.body.senha;
+
+  execSQLQuery('INSERT INTO usuario(nome,email,senha) Values (?,?,?)', [nome, email, senha], res);
+});
+
+app.post('/loginusuarios', async (req, res) => {
+  const data = req.body;
+  const id = [data.email, data.senha];
+
+  var [result] = await resultSQLQuery('SELECT * FROM usuario WHERE email=? and senha=?', id);
+ 
+  if (result && result.autorizado == 1) {
+    res.json({ 'menssagem': 'Sucesso!', 'idusuario': result.idusuario, 'autorizar': result.autorizado });
+   
+  } else if (result && result.autorizado == 0) {
+    res.json({ 'menssagem': 'Cadastro recusado!' });
+    
+  }
+  else{ 
+        res.json({ 'menssagem': 'E-mail e/ou Senha inválido' });
+
+  }
+});
+
+// Rota para rejeitar e rejeitar um usuário
+app.put('/rejeitarusuario/:id', (req, res) => {
+  const id = req.params.id;
+
+  // Atualiza o usuário marcando como rejeitado no banco de dados
+  const updateQuery = 'UPDATE usuario SET autorizado = 0 WHERE idusuario = ?';
+  execSQLQuery(updateQuery, [id], res, () => {
+    console.log(`Usuário ${id} marcado como autorizado no banco de dados.`);
+
+    // // Remove o usuário completamente do banco de dados
+    // const deleteQuery = 'DELETE FROM usuario WHERE idusuario = ?';
+    // execSQLQuery(deleteQuery, [id], res, () => {
+    //   console.log(`Usuário ${id} excluído do banco de dados.`);
+    //   res.status(200).json({ message: `Usuário ${id} rejeitado e excluído com sucesso.` });
+    // });
+  });
+})
+
+
+// Rota para autorizar e autorizar um usuário
+app.put('/autorizarusuario/:id', (req, res) => {
+  const id = req.params.id;
+
+  // Atualiza o usuário marcando como autorizado no banco de dados
+  const updateQuery = 'UPDATE usuario SET autorizado = 1 WHERE idusuario = ?';
+  execSQLQuery(updateQuery, [id], res, () => {
+    console.log(`Usuário ${id} marcado como autorizado no banco de dados.`);
+
+
+  });
+})
+
+//rotas espaços fisicos
+app.get('/verespacos', (req, res) => {
+    execSQLQuery('SELECT * FROM espaços_fisicos', null,res);
+});
+
+app.post('/cadastrarespaco', (req, res) => {
+    const nome = req.body.nome;
+    const descrição = req.body.descrição;
+    const numero_sala = req.body.numero_sala;
+    const capacidade = req.body.capacidade;
+    const andar = req.body.andar;
+    const predio = req.body.predio;
+    const largura = req.body.largura;
+    const comprimento = req.body.comprimento;
+    const area = req.body.area;
+  
+    execSQLQuery('INSERT INTO espaços_fisicos(nome, descrição, numero_sala, capacidade, andar, predio, largura, comprimento, area) Values (?,?,?,?,?,?,?,?,?)'
+               ,[nome, descrição, numero_sala, capacidade, andar, predio, largura, comprimento, area], res);
+});
+
+
+
+app.delete('/deletarespaços/:id', (req, res) =>{
+    const id = [req.params.id];
+    execSQLQuery('DELETE FROM espaços_fisicos WHERE idespaço_fisico=?',id, res);
+})
+
+
+
+app.get('/verreserva', (req,res) => {
+    execSQLQuery('SELECT * FROM reserva', null,res);
+})
+
+
+
+
+
+
+//rotas recursos
+
+app.get('/verrecursos', (req,res) => {
+  execSQLQuery('SELECT FROM recursos recursos', res, null);
+})
+
+
+app.post('/cadastrarrecurso', (req, res) =>{
+  const recurso = req.body.recurso;
+  const quantidade = req.body.quantidade;
+  const descricao = req.body.descricao;
+  const espaco_fisico = req.body.espaco_fisico;
+  const data = [recurso, quantidade, descricao, espaco_fisico];
+  
+execSQLQuery('INSERT INTO recursos(recurso, quantidade, descricao, espaco_fisico) Values (?,?,?,?)', data, res);
+})
+
+//rotas espaços fisicos
+app.get("/verespacos", (req, res) => {
+  execSQLQuery("SELECT * FROM espaços_fisicos ORDER BY numero_sala ASC", null, res);
+});
+
+app.get("/verespacos/:id", (req, res) => {
+  const id = [req.params.id];
+  execSQLQuery("SELECT * FROM espaços_fisicos WHERE idespaço_fisico =? ORDER BY numero_sala ASC", id, res);
+});
+
+app.get("/buscarIdEspaco", (req, res) => {
+  const nomeEspaco = req.query.nomeEspaco; // Obtém o nome do espaço físico da consulta
+  execSQLQuery("SELECT idespaço_fisico FROM espaços_fisicos WHERE nome = ? LIMIT 1", [nomeEspaco], res);
+});
+
+
+
+//rotas recursos
+
+app.get("/recursos", (req, res) => {
+  execSQLQuery("SELECT * FROM recursos", null, res);
+});
+
+
+// rotas reservas
+
+app.get("/reservas", (req,res) =>{
+   execSQLQuery("SELECT * FROM reservas",null,res);
+  
+});
+
+app.get("/reservas/:id?", (req, res) => {
+  const id = [req.params.id];
+  execSQLQuery("SELECT * FROM reservas WHERE idusuario=?", id, res);
+});
+
+app.get("/verreservas/:id?", (req, res) => {
+  const id = [req.params.id];
+  execSQLQuery("SELECT * FROM reservas WHERE idespaço_fisico=?", id, res);
+});
+
+
+app.get("/nome/:id?", (req, res) =>{
+  const id = [req.params.id];
+  execSQLQuery("SELECT * from espaços_fisicos WHERE idespaço_fisico=?", id, res);
+});
+
+
+app.post("/reservar", (req, res) => {
+  const data_inicio = req.body.data_inicio;
+  const data_final = req.body.data_final;
+  const horario_inicio= req.body.horario_inicio;
+  const horario_final= req.body.horario_final;
+  const finalidade = req.body.finalidade;
+  const idusuario = req.body.idusuario;
+  const idespaço_fisico = req.body.idespaço_fisico;
+
+
+  execSQLQuery(
+    "INSERT INTO reservas(data_inicio, data_final,horario_inicio, horario_final, finalidade, idusuario, idespaço_fisico) Values (?,?,?,?,?,?,?)",
+    [data_inicio,data_final, horario_inicio,horario_final, finalidade, idusuario, idespaço_fisico],
+    res,
+    null
+  );
+});
+
+app.get("/verificardisponibilidade", (req, res) => {
+  // Horários como variáveis
+  const data_inicio = req.query.data_inicio;
+  const data_final = req.query.data_final;
+  const horario_inicio = req.query.horario_inicio;
+  const horario_final = req.query.horario_final;
+  const idespaço_fisico = req.query.idespaço_fisico;
+
+  execSQLQuery(
+    `
+    SELECT *
+    FROM reservas
+    WHERE 
+      (
+        (data_inicio >= ? AND data_inicio <= ?)
+        OR (data_final >= ? AND data_final <= ?)
+        OR (data_inicio <= ? AND data_final >= ?)
+      )
+      
+      AND
+      
+      (
+        (horario_inicio >= ? AND horario_inicio < ?)
+        OR (horario_final > ? AND horario_final <= ?)
+        OR (horario_inicio <= ? AND horario_final >= ?)
+      )
+      
+      AND idespaço_fisico=?
+  `,
+    [
+      data_inicio,
+      data_final,
+      data_inicio,
+      data_final,
+      data_inicio,
+      data_final,
+      horario_inicio,
+      horario_final,
+      horario_inicio,
+      horario_final,
+      horario_inicio,
+      horario_final,
+      idespaço_fisico,
+    ],
+    res
+  );
+});
+
+
+
+
+app.put("/reservas/:idreserva", (req, res) => {
+  const idreserva = req.params.idreserva;
+  const data_inicio = req.body.data_inicio;
+  const data_final = req.body.data_final;
+  const horario_inicio = req.body.horario_inicio;
+  const horario_final = req.body.horario_final;
+  const finalidade = req.body.finalidade;
+  const idusuario = req.body.idusuario;
+  const idespaço_fisico = req.body.idespaço_fisico;
+
+  execSQLQuery(
+    "UPDATE reservas SET data_inicio=?, data_final=?, horario_inicio=?, horario_final=?, finalidade=? WHERE idreserva=?",
+    [data_inicio, data_final, horario_inicio, horario_final, finalidade, idreserva],
+    res,
+    null
+  );
+});
+
+app.delete("/deletarreserva/:id", (req, res) => {
+  const id = [req.params.id];
+  execSQLQuery("DELETE FROM reservas WHERE idreserva=?", id, res);
+});
+
+app.get("/conectar_espaco/:nome", (req,res)=>{
+  const nome= req.params.nome
+  const query=`SELECT espaços_fisicos.nome, espaços_fisicos.idespaço_fisico
+              FROM espaços_fisicos
+              INNER JOIN recursos ON recursos.espaco_fisico LIKE CONCAT( '%',espaços_fisicos.nome, '%')
+              WHERE recursos.espaco_fisico =?`;
+  execSQLQuery(query, nome, res);
+})
+
+app.listen(port);
+console.log('API funcionando!');
+

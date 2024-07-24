@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Antic&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cormorant&display=swap" rel="stylesheet" />
+  <link href="/front/agenda.css" rel="stylesheet" />
+  <title>ReservaR</title>
+  <link rel="shortcut icon" href="/img/logoRR.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/pt-br.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <main>
+
+    <header>
+      <nav class="navigation">
+
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/index.html">Home</a></li>
+         
+        </ul>
+
+        <div class="menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+
+        <div id="menu">
+          <div id="logo">
+            <img src="/img/logo2-removebg-preview.png" alt="Logo do Site" class="logo">
+          </div>
+        </div>
+      </nav>
+
+      <script src="cabeçalho.js"></script>
+
+    </header>
+
+    <div class="tela">
+      <div class="centralizar">
+        <form id="escolhaForm">
+          <select id="escolhaEspaco" name="escolhaEspaco">
+            <!-- Opções serão preenchidas via JavaScript -->
+          </select>
+        </form>
+
+        <h1>Agenda</h1>
+        <div id="calendar"></div>
+
+        <style>
+          /* Defina a cor de fundo dos eventos como rgba(21, 161, 159, 1) */
+          .fc-event {
+            background-color: rgba(21, 161, 159, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+          }
+
+          .fc-day-grid {
+            display: none;
+          }
+
+          #calendar {
+            width: 100%;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+          }
+        </style>
+
+        <script>
+          // Função para preencher a lista suspensa com os espaços físicos
+          function preencherEspacos(espacos) {
+            var selectEspaco = document.getElementById("escolhaEspaco");
+            espacos.forEach(function (espaco) {
+              var option = document.createElement("option");
+              option.value = espaco.nome ;
+              option.text = espaco.nome + "-" + espaco.numero_sala;
+              selectEspaco.appendChild(option);
+            });
+          }
+
+          // Função para atualizar o calendário
+          function atualizarCalendario(idEspaco) {
+            $('#calendar').fullCalendar('destroy'); // Destruir o calendário existente
+            // Inicialize o novo calendário
+            $('#calendar').fullCalendar({
+              defaultView: 'agendaWeek',
+              header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'agendaWeek,agendaDay'
+              },
+              slotDuration: '00:30:00', // Duração dos slots (30 minutos)
+              minTime: '07:00:00', // Horário de início (7 AM)
+              maxTime: '23:00:00', // Horário de término (11 PM),
+
+              // Traduções para o plugin FullCalendar
+              monthNames: [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
+                'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+              ],
+              monthNamesShort: [
+                'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+              ],
+              dayNames: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'],
+              dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+              buttonText: {
+                today: 'Hoje',
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia'
+              },
+              
+              events: function (start, end, timezone, callback) {
+                // Use Axios para buscar os eventos disponíveis da rota /reservas
+                axios.get('https://reservar.glitch.me/verreservas/' + idEspaco)
+                  .then(function (response) {
+                    const eventos = [];
+                    response.data.forEach(function (dado) {
+                      let dataAtual = moment(dado.data_inicio);
+                      const dataFinal = moment(dado.data_final);
+                      while (dataAtual.isSameOrBefore(dataFinal, 'day')) {
+                        eventos.push({
+                          title: dado.finalidade,
+                          start: dataAtual.format('YYYY-MM-DD') + 'T' + dado.horario_inicio,
+                          end: dataAtual.format('YYYY-MM-DD') + 'T' + dado.horario_final,
+                        });
+                        dataAtual.add(1, 'day');
+                      }
+                    });
+                    callback(eventos);
+                  })
+                  .catch(function (error) {
+                    console.error(error);
+                  });
+              }
+            });
+          }
+
+          // Função para salvar a seleção do usuário
+          function salvarSelecao() {
+            var selectedSpace = document.getElementById("escolhaEspaco").value;
+            if (selectedSpace) {
+              axios.get(`https://reservar.glitch.me/buscarIdEspaco`, {
+                params: {
+                  nomeEspaco: selectedSpace
+                }
+              })
+                .then((response) => {
+                  idEspaco = response.data[0].idespaço_fisico;
+                  atualizarCalendario(idEspaco);
+                })
+                .catch((error) => {
+                  console.error('Erro ao fazer a solicitação Axios:', error);
+                });
+            }
+          }
+
+          // Carregar a lista de espaços físicos ao carregar a página
+          axios.get("https://reservar.glitch.me/verespacos")
+            .then(function (response) {
+              var espacos = response.data;
+              preencherEspacos(espacos);
+              // Carregar o calendário com a primeira seleção
+              salvarSelecao();
+            })
+            .catch(function (error) {
+              console.error("Erro ao buscar espaços físicos", error);
+            });
+
+          // Adicione um ouvinte de evento ao <select> para atualizar automaticamente
+          // quando a seleção for alterada
+          document.getElementById("escolhaEspaco").addEventListener("change", salvarSelecao);
+
+        </script>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="rodape" id="contato">
+    <div class="rodape-div">
+
+      <div class="rodape-div-1">
+        <div class="rodape-div-1-coluna">
+
+          <span><b>RESERVAR</b></span>
+          <p>Esse sistema faz parte do Projeto Interdisciplinar do CEFET-MG campus Leopoldina.</p>
+        </div>
+      </div>
+
+      <div class="rodape-div-2">
+        <div class="rodape-div-2-coluna">
+
+          <span><b>Contatos</b></span>
+          <p>spacelab02023pi@gmail.com</p>
+          <p>ig: @reservar.cefetmg</p>
+        </div>
+      </div>
+
+      <div class="rodape-div-4-coluna">
+        <span><b>Outros</b></span>
+        <p> <a href="/front/Politica.html">Política de Privacidade</p>
+      </div>
+
+    </div>
+    <p class="rodape-direitos">Copyright © 2023 – Todos os Direitos Reservados.</p>
+  </footer>
+
+</body>
+
+</html>

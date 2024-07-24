@@ -1,0 +1,711 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    list-style: none;
+    text-decoration: none;
+}
+
+:root {
+    --red: #2f00ff;
+    --white: #fff;
+    --dark: #1e1c2a;
+}
+
+header{
+    width: auto;
+    height: 5rem;
+}
+
+.logo {
+    max-width: 160px;
+    height: auto;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    box-shadow: 0 0.1rem 0.5rem #ccc;
+    width: 100%;
+    background: var(--white);
+    transition: all 0.5s;
+    position: fixed;
+    z-index: 10;
+}
+
+.navigation .logo {
+    color: var(--red);
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+
+.logo span {
+    color: var(--dark);
+}
+
+.navigation ul {
+    display: flex;
+    align-items: center;
+    gap: 5rem;
+}
+
+.navigation ul li a {
+    color: var(--dark);
+    font-size: 17px;
+    font-weight: 500;
+    transition: all 0.5s;
+}
+
+.navigation ul li a:hover {
+    color: var(--red);
+}
+
+.navigation i {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.menu {
+    cursor: pointer;
+    display: none;
+}
+
+.menu .bar {
+    display: block;
+    width: 22px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--dark);
+    margin: 5px auto;
+    transition: all 0.3s;
+}
+
+.menu .bar:nth-child(1),
+.menu .bar:nth-child(3) {
+    background: var(--red);
+}
+
+
+@media (max-width:785px) {
+    .navigation {
+        padding: 18px 20px;
+    }
+
+    .menu {
+        display: block;
+    }
+
+    .menu.ativo .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu.ativo .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu.ativo .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 70px;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        background: var(--white);
+        gap: -10px;
+        transition: 0.3s;
+    }
+
+    .nav-menu.ativo {
+        right: 0;
+    }
+
+    .nav-item {
+        margin: 16px 0;
+    }
+}
+
+
+
+
+
+.rodape {
+    background-color: #5e5e5e;
+    color: white;
+    height: auto;
+    width: 100%;
+    font-size: 14px;
+    font-family: helvetica;
+}
+
+.rodape a {
+    text-decoration: none;
+    color: white;
+}
+
+.rodape p {
+    margin-bottom: 5px;
+}
+
+.rodape-div {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: auto;
+    align-items: stretch;
+    padding: 60px 10px 40px 10px;
+}
+
+.rodape-div-1,
+.rodape-div-2,
+.rodape-div-3,
+.rodape-div-4 {
+    display: flex;
+    width: calc(100% / 4 - 20px);
+    padding: 10px;
+}
+
+.rodape span {
+    font-size: 20px;
+    color: white;
+}
+
+.rodape-direitos {
+    width: calc(100% - 20px);
+    background-color: rgb(0, 0, 0);
+    padding: 10px;
+    margin: 0px;
+    text-align: center;
+}
+
+/*mobile*/
+@media (max-width: 768px) {
+
+    .rodape-div-1,
+    .rodape-div-2,
+    .rodape-div-3,
+    .rodape-div-4 {
+        width: calc(50% - 20px);
+        padding: 10px;
+    }
+
+    .rodape-div {
+        padding: 60px 0px 40px 0px;
+    }
+}
+
+.tela1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: row-reverse;
+}
+
+/* Estilos para os boxes */
+.box1 {
+    background-color: #2c2a2a;
+    border: 1px solid #ccc;
+    /* Borda dos boxes */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+    margin: 20px;
+    /* Espaçamento entre os boxes */
+    text-align: center;
+    padding: 20px;
+    width: 30%;
+    /* Largura dos boxes (ajuste conforme necessário) */
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    flex-direction: column;
+
+}
+
+.box2 {
+    text-align: center;
+    width: 30%;
+    /* Largura dos boxes (ajuste conforme necessário) */
+    height: 50%;
+    display: flex;
+    align-items: center;
+
+}
+
+.box3 {
+
+    width: 30%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    background-color: rgb(21, 161, 159);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.box3-content{
+    height: auto;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    font-size: 0.7rem;
+}
+
+.teste {
+
+    max-width: 100%;
+    background-color: #2c2a2a;
+    border: 3%;
+    border-radius: 10px;
+    padding: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+}
+/* Estilos para o botão de reservar */
+.reservar-button {
+    background-color: rgb(21, 161, 159);
+    /* Cor de fundo do botão */
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    /* Espaçamento acima do botão */
+    cursor: pointer;
+
+}
+
+
+/* Estilos para a imagem */
+.box-image {
+    max-width: 100%;
+    /* Garante que a imagem não ultrapasse a largura do box */
+    height: auto;
+}
+
+@media (max-width:785px) {
+    .box2 {
+        display: none;
+    }
+
+    .box1 {
+        width: 70%;
+        height: 50%;
+    }
+
+    .box3{
+        display: flex;
+        width: 70%;
+        height: 50%;
+        
+    }
+
+    .tela1{
+        flex-direction: column-reverse;
+       
+
+    }
+
+    .reservar-button{
+        display: none;
+    }
+
+    .teste{
+        flex-direction: column;
+        font-size: 0.5rem;
+        
+    }
+
+    input{
+        font-size: 0.5rem;
+    }
+
+    
+}@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    list-style: none;
+    text-decoration: none;
+}
+
+:root {
+    --red: #2f00ff;
+    --white: #fff;
+    --dark: #1e1c2a;
+}
+
+header{
+    width: auto;
+    height: 5rem;
+}
+
+.logo {
+    max-width: 160px;
+    height: auto;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    box-shadow: 0 0.1rem 0.5rem #ccc;
+    width: 100%;
+    background: var(--white);
+    transition: all 0.5s;
+    position: fixed;
+    z-index: 10;
+}
+
+.navigation .logo {
+    color: var(--red);
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+
+.logo span {
+    color: var(--dark);
+}
+
+.navigation ul {
+    display: flex;
+    align-items: center;
+    gap: 5rem;
+}
+
+.navigation ul li a {
+    color: var(--dark);
+    font-size: 17px;
+    font-weight: 500;
+    transition: all 0.5s;
+}
+
+.navigation ul li a:hover {
+    color: var(--red);
+}
+
+.navigation i {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.menu {
+    cursor: pointer;
+    display: none;
+}
+
+.menu .bar {
+    display: block;
+    width: 22px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--dark);
+    margin: 5px auto;
+    transition: all 0.3s;
+}
+
+.menu .bar:nth-child(1),
+.menu .bar:nth-child(3) {
+    background: var(--red);
+}
+
+@media (max-width:785px) {
+    .navigation {
+        padding: 18px 20px;
+    }
+
+    .menu {
+        display: block;
+    }
+
+    .menu.ativo .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu.ativo .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu.ativo .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 70px;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        background: var(--white);
+        gap: -10px;
+        transition: 0.3s;
+    }
+
+    .nav-menu.ativo {
+        right: 0;
+    }
+
+    .nav-item {
+        margin: 16px 0;
+    }
+}
+
+
+
+
+.rodape {
+    background-color: #5e5e5e;
+    color: white;
+    height: auto;
+    width: 100%;
+    font-size: 14px;
+    font-family: helvetica;
+}
+
+.rodape a {
+    text-decoration: none;
+    color: white;
+}
+
+.rodape p {
+    margin-bottom: 5px;
+}
+
+.rodape-div {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: auto;
+    align-items: stretch;
+    padding: 60px 10px 40px 10px;
+}
+
+.rodape-div-1,
+.rodape-div-2,
+.rodape-div-3,
+.rodape-div-4 {
+    display: flex;
+    width: calc(100% / 4 - 20px);
+    padding: 10px;
+}
+
+.rodape span {
+    font-size: 20px;
+    color: white;
+}
+
+.rodape-direitos {
+    width: 100%;
+    background-color: rgb(0, 0, 0);
+    padding: 10px;
+    margin: 0px;
+    text-align: center;
+}
+
+/*mobile*/
+@media (max-width: 768px) {
+
+    .rodape-div-1,
+    .rodape-div-2,
+    .rodape-div-3,
+    .rodape-div-4 {
+        width: calc(50% - 20px);
+        padding: 10px;
+    }
+
+    .rodape-div {
+        padding: 60px 0px 40px 0px;
+    }
+}
+
+.tela1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: row-reverse;
+}
+
+/* Estilos para os boxes */
+.box1 {
+    background-color: #2c2a2a;
+    border: 1px solid #ccc;
+    /* Borda dos boxes */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+    margin: 20px;
+    /* Espaçamento entre os boxes */
+    text-align: center;
+    padding: 20px;
+    width: 30%;
+    /* Largura dos boxes (ajuste conforme necessário) */
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    flex-direction: column;
+
+}
+
+.box2 {
+    text-align: center;
+    width: 30%;
+    /* Largura dos boxes (ajuste conforme necessário) */
+    height: 50%;
+    display: flex;
+    align-items: center;
+
+}
+
+.box3 {
+
+    width: 30%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    background-color: #3CFAF6;
+    display: none;
+    flex-direction: column;
+}
+
+.box3-content{
+    height: auto;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    font-size: 0.7rem;
+}
+
+.teste {
+
+    max-width: 100%;
+    background-color: #2c2a2a;
+    border: 3%;
+    border-radius: 10px;
+    padding: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+}
+/* Estilos para o botão de reservar */
+.reservar-button {
+    background-color: #3CFAF6;
+    /* Cor de fundo do botão */
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    /* Espaçamento acima do botão */
+    cursor: pointer;
+    border-radius: 5px;
+
+}
+
+.reservar-button:hover{
+    background-color: #fff;
+    color: black;
+    scale: 1.1;
+}
+
+/* Estilos para a imagem */
+.box-image {
+    max-width: 100%;
+    /* Garante que a imagem não ultrapasse a largura do box */
+    height: auto;
+}
+
+@media (max-width:785px) {
+    .box2 {
+        display: none;
+    }
+
+    .box1 {
+        width: 70%;
+        height: 50%;
+        border: none;
+    }
+
+    .box3{
+        display: flex;
+        width: 70%;
+        height: 50%;
+        border: none;
+    }
+
+    .tela1{
+        flex-direction: column-reverse;
+        padding: 0px;
+    }
+
+    .reservar-button{
+        display: none;
+    }
+
+    .teste{
+        flex-direction: column;
+        font-size: 0.5rem;
+        
+    }
+
+    input{
+        font-size: 0.5rem;
+    }
+
+    
+}
+
+.box1, .box2, .box3 {
+    max-width: 30%;
+    width: 100%;
+}
+
+@media (max-width: 785px) {
+    .box1, .box2, .box3 {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 785px) {
+    .teste {
+        font-size: 0.5rem;
+    }
+}

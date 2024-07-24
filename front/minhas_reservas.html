@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReservaR</title>
+  <link href="/front/minhas_reservas.css" rel="stylesheet" />
+  <link rel="shortcut icon" href="/img/logoRR.png" type="image/x-icon" />
+</head>
+
+<body>
+  <main>
+    <header>
+      <nav class="navigation">
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="/front/servprincipal.html">Home</a></li>
+          <li class="nav-item"><a href="/front/agenda.html">Agenda</a></li>
+          <li><a href="/front/disponiveis.html">Reservar</a></p></li>
+          <li><a href="/front/minhas_reservas.html">Minhas reservas</a></p></li>
+      </ul>
+        <div class="menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+        <div id="menu">
+          <div id="logo">
+            <img src="/img/logo2-removebg-preview.png" alt="Logo do Site" class="logo">
+          </div>
+        </div>
+      </nav>
+      <script src="/front/cabeçalho.js"></script>
+    </header>
+
+    <div class="tela">
+
+      <h1>Minhas Reservas</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Sala</th>
+            <th>Data início</th>
+            <th>Data final</th>
+            <th>Horário início</th>
+            <th>Horário final</th>
+            <th>Finalidade</th>
+            <th></th> <!-- Coluna para botões de edição/exclusão -->
+          </tr>
+        </thead>
+        <tbody id="info"></tbody>
+      </table>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script>
+        // Função para buscar o nome do espaço físico com base no ID
+        async function buscarNomeEspacoFisico(idespaco_fisico) {
+          try {
+            const response = await axios.get(`https://reservar.glitch.me/nome/${idespaco_fisico}`);
+            const nome = response.data[0].nome;
+            const numero_sala = response.data[0].numero_sala;
+
+            if (numero_sala === null) {
+              return nome;
+            } else {
+              return `${nome}-${numero_sala}`;
+            }
+          } catch (error) {
+            console.error("Erro ao buscar nome do espaço físico:", error);
+            return "Nome não encontrado";
+          }
+        }
+
+
+        function criarBotoesAcao(idReserva) {
+          const editarButton = document.createElement("button");
+          const excluirButton = document.createElement("button");
+
+          // Defina os URLs das imagens PNG para os botões de Editar e Excluir
+          const editarImgURL = "/img/botao-editar.png"; // Substitua pelo URL da imagem "Editar"
+          const excluirImgURL = "/img/excluir.png"; // Substitua pelo URL da imagem "Excluir"
+
+          editarButton.innerHTML = `<img src="${editarImgURL}" alt="Editar" width="20">`;
+          excluirButton.innerHTML = `<img src="${excluirImgURL}" alt="Excluir" width="20">`;
+
+          const cell = document.createElement("td");
+          const buttonDiv = document.createElement("div");
+          buttonDiv.style.display = "flex"; // Garante que os botões fiquem na mesma linha
+
+          // Adicione eventos de clique aos botões de imagem
+          editarButton.addEventListener("click", () => editarReserva(idReserva));
+          excluirButton.addEventListener("click", () => excluirReserva(idReserva));
+
+          buttonDiv.appendChild(editarButton);
+          buttonDiv.appendChild(excluirButton);
+          cell.appendChild(buttonDiv);
+
+          return cell;
+        }
+
+
+
+        // Função para transformar as células em campos de entrada
+        function transformarCelulasEmInputs(row) {
+          const cells = row.querySelectorAll("td");
+
+          cells.forEach((cell, index) => {
+            if (index < cells.length - 1) {
+              const input = document.createElement("input");
+              input.type = index === 1 || index === 2 ? "date" : index === 3 || index === 4 ? "time" : "text";
+              input.value = index === 1 || index === 2 ? formatarData(cell.textContent) : cell.textContent;
+              if (index === 0) {
+                input.disabled = true; // Impede a edição do nome da sala
+              }
+              cell.innerHTML = "";
+              cell.appendChild(input);
+            }
+          });
+        }
+
+        // Função para transformar os campos de entrada em texto
+        function transformarInputsEmTexto(row) {
+          const cells = row.querySelectorAll("td");
+
+          cells.forEach((cell, index) => {
+            if (index < cells.length - 1) {
+              const input = cell.querySelector("input");
+              cell.innerHTML = input.value;
+            }
+          });
+        }
+
+        // Função para formatar a data para o formato "yyyy-mm-dd"
+        function formatarData(data) {
+          const dataParts = data.split('-');
+          if (dataParts.length === 3) {
+            const [ano, mes, dia] = dataParts;
+            return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+          }
+          return data; // Se a formatação não for reconhecida, mantém a data original
+        }
+
+
+        // Função para editar uma reserva
+        function editarReserva(idReserva) {
+          const row = document.querySelector(`#info tr[data-id="${idReserva}"]`);
+
+          // Transforma as células em campos de entrada
+          transformarCelulasEmInputs(row);
+
+          // Substitui o botão "Editar" pelo botão "Salvar"
+          const botoesAcao = row.querySelector("td:last-child");
+          botoesAcao.innerHTML = `
+    <button onclick="salvarReserva(${idReserva})">Salvar</button>
+  `;
+        }
+
+        // Função para reconstruir os botões de ação após a transformação
+        function reconstruirBotoesAcao(idReserva) {
+          const botoesAcao = document.createElement("td");
+          const editarButton = document.createElement("button");
+          const excluirButton = document.createElement("button");
+
+          const editarImgURL = "/img/botao-editar.png"; // Substitua pelo URL da imagem "Editar"
+          const excluirImgURL = "/img/excluir.png"; // Substitua pelo URL da imagem "Excluir"
+
+          botoesAcao.style.border = "none";
+          editarButton.innerHTML = `<img src="${editarImgURL}" alt="Editar" width="20">`;
+          excluirButton.innerHTML = `<img src="${excluirImgURL}" alt="Excluir" width="20">`;
+
+          editarButton.addEventListener("click", () => editarReserva(idReserva));
+          excluirButton.addEventListener("click", () => excluirReserva(idReserva));
+
+          const buttonDiv = document.createElement("div");
+          buttonDiv.style.display = "flex"; // Garante que os botões fiquem na mesma linha
+
+
+          buttonDiv.appendChild(editarButton);
+          buttonDiv.appendChild(excluirButton);
+          botoesAcao.appendChild(buttonDiv);
+
+          return botoesAcao;
+        }
+
+        // Função para salvar uma reserva editada
+        function salvarReserva(idReserva) {
+          const row = document.querySelector(`#info tr[data-id="${idReserva}"]`);
+
+          // Transforma os campos de entrada de volta em texto
+          transformarInputsEmTexto(row);
+
+          // Obtenha os dados atualizados
+          const data_inicio = row.cells[1].textContent;
+          const data_final = row.cells[2].textContent;
+          const horario_inicio = row.cells[3].textContent;
+          const horario_final = row.cells[4].textContent;
+          const finalidade = row.cells[5].textContent;
+
+          const dadosAtualizados = {
+            data_inicio: data_inicio,
+            data_final: data_final,
+            horario_inicio: horario_inicio,
+            horario_final: horario_final,
+            finalidade: finalidade,
+            // Outros campos que você deseja atualizar
+          };
+
+          // Envie uma solicitação PUT para a rota de edição com os dados atualizados
+          axios.put(`https://reservar.glitch.me/reservas/${idReserva}`, dadosAtualizados)
+            .then((response) => {
+              alert(`Reserva ${idReserva} atualizada com sucesso!`);
+            })
+            .catch((error) => {
+              console.error("Erro ao editar reserva:", error);
+            });
+
+          // Reconstruir os botões de ação
+          const botoesAcao = reconstruirBotoesAcao(idReserva);
+          const botoesAcaoCell = row.querySelector("td:last-child");
+          botoesAcaoCell.innerHTML = "";
+          botoesAcaoCell.appendChild(botoesAcao);
+        }
+
+
+        // Função para excluir uma reserva
+        function excluirReserva(idreserva) {
+          const confirmacao = confirm("Tem certeza de que deseja excluir esta reserva?");
+
+          if (confirmacao) {
+
+            axios.delete(`https://reservar.glitch.me/deletarreserva/${idreserva}`);
+            // Remova a linha da tabela para refletir a exclusão
+            const rowToRemove = document.querySelector(`#info tr[data-id="${idreserva}"]`);
+            if (rowToRemove) {
+              rowToRemove.remove();
+            }
+          }
+
+          alert(`Reserva ${idReserva} excluída com sucesso!`);
+
+        }
+
+        // Chama a função para buscar as reservas
+        async function buscarReservas() {
+          const idusuario = sessionStorage.getItem('idusuario');
+          try {
+            const response = await axios.get("https://reservar.glitch.me/reservas/"+idusuario); // Certifique-se de configurar a rota correta aqui
+            const data = response.data;
+            const infoTableBody = document.querySelector("#info");
+
+            for (const row of data) {
+              const nomeEspacoFisico = await buscarNomeEspacoFisico(row.idespaço_fisico);
+
+              const newRow = document.createElement("tr");
+              newRow.innerHTML = `
+                  <td>${nomeEspacoFisico}</td>
+                  <td>${row.data_inicio}</td>
+                  <td>${row.data_final}</td>
+                  <td>${row.horario_inicio}</td>
+                  <td>${row.horario_final}</td>
+                  <td>${row.finalidade}</td>
+                `;
+
+              const idreserva = row.idreserva; // Obtenha a ID da reserva
+
+              const botoesAcao = criarBotoesAcao(idreserva);
+              newRow.appendChild(botoesAcao);
+
+              newRow.setAttribute("data-id", idreserva); // Defina um atributo data-id com a ID da reserva
+
+              infoTableBody.appendChild(newRow);
+            }
+          } catch (error) {
+            console.error("Erro ao buscar reservas:", error);
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          // Verificar se o ID do usuário está presente no sessionStorage
+          var idusuario = sessionStorage.getItem("idusuario");
+
+          if (!idusuario) {
+            // Se o ID do usuário não estiver presente, redirecionar para a página de login
+            window.location.href = "/index.html";
+          } else {
+            // Se o ID do usuário estiver presente, continuar carregando as reservas
+            buscarReservas();
+          }
+
+        });
+      </script>
+
+    </div>
+
+    <footer class="rodape" id="contato">
+      <div class="rodape-div">
+        <div class="rodape-div-1">
+          <div class="rodape-div-1-coluna">
+            <span><b>RESERVAR</b></span>
+            <p>Esse sistema faz parte do Projeto Interdisciplinar do CEFET-MG campus Leopoldina.</p>
+          </div>
+        </div>
+        <div class="rodape-div-2">
+          <div class="rodape-div-2-coluna">
+            <span><b>Contatos</b></span>
+            <p>spacelab02023pi@gmail.com</p>
+            <p>ig: @reservar.cefetmg</p>
+          </div>
+        </div>
+        <div class="rodape-div-3">
+          <div class="rodape-div-3-coluna">
+            <span><b>Links</b></span>
+            <p><a href="#">Desenvolvedores</a></p>
+            <p><a href="#">Sistema</a></p>
+            <p><a href="#">Sobre</a></p>
+          </div>
+        </div>
+        <div class="rodape-div-4">
+          <div class="rodape-div-4-coluna">
+            <span><b>Outros</b></span>
+            <p> <a href="/front/Politica.html">Política de Privacidade</p>
+          </div>
+        </div>
+      </div>
+      <p class="rodape-direitos">Copyright © 2023 – Todos os Direitos Reservados.</p>
+    </footer>
+  </main>
+</body>
+
+</html>
